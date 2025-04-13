@@ -1,0 +1,172 @@
+body {
+    background: linear-gradient(to right, #4e3a6d, #c27a56);
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+.container {
+    max-width: 1000px;
+    margin: 20px auto; /* Reduced from 40px to 20px */
+    padding: 20px;
+}
+
+.project-card {
+    background: white;
+    border-radius: 15px;
+    padding: 30px;
+    margin-bottom: 40px;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+    border: 1px solid rgba(132, 10, 219, 0.1);
+}
+
+.project-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(132, 10, 219, 0.15);
+}
+
+.project-title {
+    color: #840adb;
+    font-size: 28px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 2px solid rgba(132, 10, 219, 0.1);
+    font-weight: bold;
+}
+
+.section-title {
+    color: #333;
+    font-size: 20px;
+    font-weight: bold;
+    margin: 25px 0 15px;
+    display: flex;
+    align-items: center;
+}
+
+.section-title::before {
+    content: '';
+    display: inline-block;
+    width: 4px;
+    height: 24px;
+    background: #840adb;
+    margin-right: 12px;
+    border-radius: 2px;
+}
+
+.tech-stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin: 15px 0;
+}
+
+.tech-item {
+    background: rgba(132, 10, 219, 0.1);
+    color: #840adb;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-size: 14px;
+    font-weight: 500;
+    transition: all 0.3s ease;
+}
+
+.tech-item:hover {
+    background: #840adb;
+    color: white;
+    transform: scale(1.05);
+}
+
+.feature-list {
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 15px;
+}
+
+.feature-list li {
+    margin: 12px 0;
+    padding-left: 28px;
+    position: relative;
+    line-height: 1.6;
+}
+
+.feature-list li::before {
+    content: "✦";
+    color: #840adb;
+    position: absolute;
+    left: 0;
+    font-weight: bold;
+}
+
+.problem-description {
+    background: #f8f9fa;
+    padding: 20px;
+    border-radius: 10px;
+    margin: 15px 0;
+    line-height: 1.6;
+    border-left: 4px solid #840adb;
+}
+
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    margin-left: 10px;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-decoration: none;  /* This removes the underline */
+}
+
+.logout-button:hover {
+    background-color: #c82333;
+}
+
+.page-title {
+    text-align: center;
+    color: white;
+    font-size: 2.5em;
+    font-weight: bold;
+    margin-top: 10px; /* Added margin-top */
+    margin-bottom: 40px;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    padding: 15px; /* Reduced padding */
+    background: rgba(132, 10, 219, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(5px);
+}
+
+.page-title span {
+    color: #0be61d;
+}
+
+.loading-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 300px;
+}
+
+.loading-spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #f3f3f3;
+    border-top: 5px solid #840adb;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+.loading-text {
+    color: white;
+    margin-top: 20px;
+    font-size: 1.2em;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}

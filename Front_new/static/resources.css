@@ -1,0 +1,157 @@
+body {
+    background: linear-gradient(135deg, #4e3a6d, #c27a56);
+    min-height: 100vh;
+    margin: 0;
+    font-family: 'Segoe UI', 'Arial', sans-serif;
+    padding: 20px 0;
+}
+
+.container {
+    max-width: 1200px;
+    margin: auto;
+    margin-bottom: 100px;
+    padding: 0 20px;
+}
+
+.title {
+    font-size: 36px;
+    font-weight: bold;
+    margin-bottom: 40px;
+    color: white;
+    text-align: center;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+}
+
+#internship-container {
+    display: flex;
+    flex-direction: column;
+    gap: 30px;
+}
+
+.internship-card {
+    width: 100%;
+    height: auto;
+    min-height: 200px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+    border-radius: 15px;
+    padding: 25px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    transition: all 0.3s ease;
+}
+
+.internship-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.2);
+}
+
+.internship-details {
+    flex: 1;
+    padding: 15px;
+}
+
+.internship-details h3 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.internship-details p {
+    color: #555;
+    margin: 10px 0;
+    font-size: 16px;
+}
+
+.button-group {
+    display: flex;
+    gap: 15px;
+    margin-top: 25px;
+}
+
+.view-btn, .projects-btn {
+    padding: 12px 25px;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    font-size: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    transition: all 0.3s ease;
+    min-width: 120px;
+    text-align: center;
+}
+
+.view-btn {
+    background: linear-gradient(135deg, #6e48aa, #9d50bb);
+    color: white;
+}
+
+.projects-btn {
+    background: linear-gradient(135deg, #11998e, #38ef7d);
+    color: white;
+}
+
+.view-btn:hover, .projects-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+    color: white;
+    text-decoration: none;
+}
+
+.no-internships {
+    font-size: 20px;
+    color: white;
+    text-align: center;
+    padding: 40px;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 15px;
+    backdrop-filter: blur(10px);
+}
+
+.progress-section {
+    margin: 20px 0;
+    position: relative;
+}
+
+.progress-indicator {
+    height: 8px;
+    background: rgba(0, 0, 0, 0.1);
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 10px 0;
+}
+
+.progress-bar {
+    height: 100%;
+    background: linear-gradient(90deg, #00f2fe, #4facfe);
+    border-radius: 4px;
+    transition: width 1s ease;
+}
+
+.progress-percentage {
+    position: absolute;
+    right: 0;
+    top: 0;
+    color: #2c3e50;
+    font-weight: 600;
+}
+
+.total-progress {
+    margin-top: 25px;
+    font-size: 18px;
+    color: #2c3e50;
+}
+
+.progress-value {
+    background-image: linear-gradient(90deg, #00f2fe, #4facfe);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    font-size: 20px;
+    color: #4facfe; /* Fallback for browsers that don't support gradient text */
+}
+

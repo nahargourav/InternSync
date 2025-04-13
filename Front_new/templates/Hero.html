@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="{{ url_for('static', filename='hero.css') }}">
+    <link rel="stylesheet" href="assets/css/font-awesome.min.css">
+    <title>Hero_Section</title>
+</head>
+<body>
+    <section class="hero">
+        <div class="tagline" style="background-color : white ; color: #ff6600; width: 30% ; font-size: large;">
+            Personalized Internship & Career Guide
+        </div>
+        <br>
+        <h1 style="font-size: 2.5em; font-weight: bold;">Search, UpSkill & <br> Get Your <span>Dream Internship</span>
+        </h1>
+        <br>
+        <i>InternSync - Aligning Passion with Profession!</i>
+        
+        <!-- Updated search box with form that submits to search endpoint -->
+        <form action="/search_from_hero" method="POST" class="search-box">
+            <input type="text" name="query" placeholder="Find your dream Internship" style="width: 35%;" required>
+            <button type="submit">🔍</button>
+        </form>
+    </section>
+
+    <!-- Category Carousel Section -->
+    <section class="category-section">
+        <div class="category-carousel">
+           <!--<button class="carousel-arrow prev">←</button> --> 
+            <div class="category-container">
+                
+            </div>
+            <!-- <button class="carousel-arrow next">→</button> -->
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            const wrapper = document.querySelector('.category-wrapper');
+            const prevBtn = document.querySelector('.carousel-arrow.prev');
+            const nextBtn = document.querySelector('.carousel-arrow.next');
+            const buttons = document.querySelectorAll('.category-button');
+
+            let scrollAmount = 0;
+            const buttonWidth = buttons[0]?.offsetWidth + 20 || 0; // button + margin
+            const visibleWidth = document.querySelector('.category-container')?.offsetWidth || 0;
+            const maxScroll = wrapper?.scrollWidth - visibleWidth || 0;
+
+            prevBtn?.addEventListener('click', () => {
+                scrollAmount = Math.max(scrollAmount - buttonWidth * 2, 0);
+                wrapper.style.transform = `translateX(-${scrollAmount}px)`;
+            });
+
+            nextBtn?.addEventListener('click', () => {
+                scrollAmount = Math.min(scrollAmount + buttonWidth * 2, maxScroll);
+                wrapper.style.transform = `translateX(-${scrollAmount}px)`;
+            });
+
+            // Add search functionality for each button
+            buttons.forEach(button => {
+                button?.addEventListener('click', () => {
+                    const query = button.textContent;
+                    // You can implement search functionality here
+                    console.log(`Searching for: ${query}`);
+                    window.location.href = `/search?query=${encodeURIComponent(query)}`;
+                });
+            });
+        });
+    </script>
+</body>
+</html>

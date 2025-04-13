@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Verification Successful</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='Login_result.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        .result-container {
+            width: 40%;
+            max-width: 600px;
+            background: #ffffff;
+            padding: 40px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            border-radius: 15px;
+            text-align: center;
+            animation: fadeIn 1s ease-in-out;
+        }
+
+        .result-message {
+            color: #28a745;
+            font-size: 28px;
+            font-weight: 600;
+            margin-bottom: 20px;
+        }
+
+        .result-container p {
+            color: #666;
+            font-size: 18px;
+            margin-bottom: 30px;
+        }
+
+        .back-button {
+            padding: 12px 25px;
+            background-color: #007bff;
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease, transform 0.3s ease;
+        }
+
+        .back-button:hover {
+            background-color: #0056b3;
+            transform: scale(1.05);
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="result-container">
+        <h1 class="result-message">Login Successful</h1>
+        <p>You have successfully Loged In!</p>
+        <button class="back-button" onclick="window.location.href='/home_logged_in'">Home</button>
+
+        <!-- <button class="back-button" onclick="goBack()">Back</button> -->
+    </div>
+    <!-- <script>
+        function goBack() {
+            window.location.href = "{{ url_for('home_logged_in') }}"; 
+        }
+    </script>
+</body> -->
+</html>

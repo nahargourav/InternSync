@@ -1,0 +1,259 @@
+body {
+    background: linear-gradient(to right, #4e3a6d, #c27a56);
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+
+}
+
+.container {
+    max-width: 1300px;
+    margin: auto;
+    margin-bottom: 100px;
+    padding-top: 40px;  /* Added spacing from top */
+}
+
+.title {
+    font-size: 42px;
+    font-weight: 800;
+    margin-bottom: 40px;
+    background: linear-gradient(135deg, #FFFFFF 0%, #92FE9D 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-bottom: 15px;
+}
+
+.title::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+    border-radius: 2px;
+}
+
+#internship-container {
+display: flex;
+flex-direction: column;
+gap: 20px;
+}
+
+.internship-card {
+width: 1200px;
+min-height: 250px;
+background: rgba(255, 255, 255, 0.1);
+backdrop-filter: blur(10px);
+border: 1px solid rgba(255, 255, 255, 0.2);
+box-shadow: 0 8px 32px rgba(31, 38, 135, 0.15);
+border-radius: 20px;
+padding: 30px;
+display: flex;
+justify-content: space-between;
+align-items: center;
+transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+position: relative;
+overflow: hidden;
+}
+
+.internship-card::before {
+content: '';
+position: absolute;
+top: 0;
+left: 0;
+right: 0;
+height: 4px;
+background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 100%);
+transform: scaleX(0);
+transition: transform 0.4s ease;
+}
+
+.internship-card:hover {
+transform: translateY(-5px);
+box-shadow: 0 15px 40px rgba(31, 38, 135, 0.2);
+background: rgba(255, 255, 255, 0.15);
+}
+
+.internship-card:hover::before {
+transform: scaleX(1);
+}
+
+.internship-details {
+text-align: left; /* Add relative positioning */
+min-height: 150px;  /* Ensure enough space for the button */
+text-align: left;
+padding: 20px;
+width: 100%;
+}
+
+h3 {
+color: #333;
+margin-bottom: 10px;
+}
+
+.internship-details h3 {
+color: #fff;
+font-size: 24px;
+font-weight: 700;
+margin-bottom: 20px;
+text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+position: relative;
+display: inline-block;
+}
+
+p {
+color: #555;
+margin: 5px 0;
+}
+
+.view-btn {
+background: linear-gradient(135deg, #00C9FF 0%, #92FE9D 100%);
+color: white;
+text-decoration: none;
+padding: 12px 30px;
+border-radius: 50px;
+font-size: 16px;
+font-weight: 600;
+letter-spacing: 1px;
+border: none;
+transition: all 0.3s ease;
+position: absolute;
+bottom: 70px;
+right: 30px;
+box-shadow: 0 4px 15px rgba(0, 201, 255, 0.3);
+}
+
+.view-btn:hover {
+transform: translateY(-2px) scale(1.05);
+box-shadow: 0 6px 20px rgba(0, 201, 255, 0.4);
+background: linear-gradient(135deg, #92FE9D 0%, #00C9FF 100%);
+}
+
+.rating-container {
+position: absolute;
+bottom: 20px;
+right: 30px;
+display: flex;
+gap: 20px;
+background: rgba(255, 255, 255, 0.1);
+padding: 10px 25px;
+border-radius: 50px;
+backdrop-filter: blur(5px);
+}
+
+.thumb-btn {
+background: transparent;
+border: none;
+font-size: 22px;
+cursor: pointer;
+display: flex;
+align-items: center;
+gap: 8px;
+transition: all 0.3s ease;
+padding: 5px 15px;
+border-radius: 30px;
+}
+
+.thumb-btn:hover {
+transform: scale(1.1);
+background: rgba(255, 255, 255, 0.1);
+}
+
+.thumb-up {
+color: #92FE9D;
+}
+
+.thumb-down {
+color: #FF6B6B;
+}
+
+.thumb-btn .count {
+font-size: 16px;
+font-weight: 600;
+color: white;
+}
+
+.animate-like {
+animation: bounce 0.5s cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+.animate-dislike {
+animation: shake 0.5s cubic-bezier(0.36, 0, 0.66, -0.56);
+}
+
+@keyframes bounce {
+0%, 100% {
+    transform: translateY(0);
+}
+50% {
+    transform: translateY(-8px);
+}
+}
+
+@keyframes shake {
+0%, 100% {
+    transform: translateX(0);
+}
+25% {
+    transform: translateX(-4px) rotate(-5deg);
+}
+75% {
+    transform: translateX(4px) rotate(5deg);
+}
+}
+
+.no-internships {
+font-size: 20px;
+color: #777;
+margin-top: 50px;
+}
+.logout-button {
+    background-color: #dc3545;
+    color: white;
+    margin-left: 10px;
+    padding: 8px 15px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+    font-weight: bold;
+    transition: background-color 0.3s;
+    text-decoration: none;  /* This removes the underline */
+}
+
+.logout-button:hover {
+
+    background-color: #c82333;
+} 
+
+.complete-btn {
+    background: linear-gradient(135deg, #6e48aa, #9d50bb);
+    color: white;
+    border: none;
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    position: absolute;
+    bottom: 40px;
+    left: 50px;
+    box-shadow: 0 4px 15px rgba(157, 80, 187, 0.3);
+}
+
+.complete-btn:hover {
+    transform: translateY(-2px) scale(1.05);
+    box-shadow: 0 6px 20px rgba(157, 80, 187, 0.4);
+    background: linear-gradient(135deg, #9d50bb, #6e48aa);
+}
+
+.complete-btn.completed {
+    background: linear-gradient(135deg, #45B649, #38ef7d);
+    cursor: default;
+    transform: none;
+    box-shadow: 0 4px 15px rgba(69, 182, 73, 0.3);
+}

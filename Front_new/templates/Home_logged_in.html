@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSync</title>
+
+    <!-- Link to CSS files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='internship.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    
+    <style>
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+            text-decoration: none;  /* This removes the underline */
+        }
+        
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #840adb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loader"></div>
+            <div class="loading-text">Searching for internships...</div>
+        </div>
+    </div>
+
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            <span style="margin-left: 10px;" class="username">{{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>
+    
+    <!-- Include all sections -->
+    {% include 'Hero.html' %}
+    {% include 'Internship.html' %}
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+
+    <script>
+        // Show loading overlay when Hero.html search is submitted
+        document.querySelector('.search-box').addEventListener('submit', function () {
+            document.getElementById('loadingOverlay').style.display = 'flex';
+        });
+
+        // Hide loading overlay when page loads (in case of back navigation)
+        window.onload = function () {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        };
+    </script>
+</body>
+</html>

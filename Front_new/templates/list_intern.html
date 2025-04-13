@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internships - InternSync</title>
+
+    <!-- Link to CSS files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='list_intern.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='internship.css') }}">
+
+    <style>
+        .search-container {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            margin: 20px 0;
+            gap: 10px;
+        }
+
+        .search-form {
+            display: flex;
+            align-items: center;
+        }
+
+        .search-input {
+            width: 300px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px 0 0 5px;
+            margin: 0;
+        }
+
+        .search-button {
+            background-color: #840adb;
+            color: white;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 0 5px 5px 0;
+            cursor: pointer;
+        }
+
+        .search-button:hover {
+            background-color: rgb(15, 223, 15)
+        }
+
+        .filters-container {
+            display: none;
+            background: #f9f9f9;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            width: auto;
+        }
+
+        .filters-container input {
+            width: 150px;
+            padding: 8px;
+            margin-right: 5px;
+            border: 1px solid #6340ef;
+            border-radius: 3px;
+            font-size: 14px;
+        }
+
+        .filter-toggle {
+            background-color: #f0f0f0;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .filter-toggle:hover {
+            background-color: #e0e0e0;
+        }
+        
+        /* Styles for logout button */
+        .logout-button {
+            background-color: #dc3545;
+            color: white;
+            margin-left: 10px;
+            padding: 8px 15px;
+            border-radius: 10px;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        
+        .logout-button:hover {
+            background-color: #c82333;
+        }
+
+        /* Card action buttons */
+        .apply-button, .enroll-button {
+            display: inline-block;
+            background: #6a0dad;
+            color: white;
+            padding: 8px 15px;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 14px;
+            margin-top: 15px;
+            margin-right: 10px;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .apply-button:hover, .enroll-button:hover {
+            background-color: #0be61d;
+        }
+
+        /* Cards container layout */
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+        }
+
+        .loading-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 9999;
+            justify-content: center;
+            align-items: center;
+            padding-left: 50px; /* Add padding to shift content right */
+        }
+
+        .loader {
+            width: 100px;
+            height: 100px;
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #840adb;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto; /* Center horizontally */
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: white;
+            font-size: 20px;
+            margin-top: 20px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <!-- Add loading overlay -->
+    <div class="loading-overlay" id="loadingOverlay">
+        <div style="text-align: center;">
+            <div class="loader"></div>
+            <div class="loading-text">Searching for internships...</div>
+        </div>
+    </div>
+
+    <div class="loading-overlay" id="enrollLoadingOverlay">
+        <div style="text-align: center;">
+            <div class="loader"></div>
+            <div class="loading-text">Processing your enrollment...</div>
+        </div>
+    </div>
+
+    <!-- Include Header -->
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav style="margin-right: 30px;" class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            <span style="margin-left: 10px;" class="username">{{ session['username'] }}</span>
+            <form action="{{ url_for('logout') }}" method="GET" style="display: inline;">
+                <button type="submit" class="logout-button">Logout</button>
+            </form>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="search-container">
+        <form id="search-form" action="/search" method="POST" class="search-form">
+            <input type="text" name="query" placeholder="Search for internships..." required class="search-input">
+            <button type="submit" class="search-button" onclick="storeQuery()">Search</button>
+            
+            <button type="button" class="filter-toggle" onclick="toggleFilters()">Filters ▼</button>
+            
+            <div id="filters" class="filters-container">
+                <!-- Remove form attribute and add these inputs to the main form -->
+                <input type="text" name="company" placeholder="Company">
+                <input type="text" name="location" placeholder="Location">
+                <input type="text" name="job_title" placeholder="Job Title">
+            </div>
+        </form>
+    </div>
+
+    <section class="internships">
+        <h2>Available <span>Internships</span></h2>
+        <div class="cards-container">
+            {% if courses %}
+                {% for job in courses %}
+                <div class="card">
+                    <div>
+                        <h1 class="company-name">{{ job.company }}</h1>
+                        <p class="location">Location: {{ job.location or "India" }}</p>
+                    </div>
+                    <div>
+                        <h1 class="job-title">{{ job.role }}</h1>
+                    </div>
+                    <div style="margin-top: 15px;">
+                        <a href="{{ job.link }}" target="_blank" class="apply-button">Apply</a>
+                        <button class="enroll-button" onclick="enroll()">Enroll</button>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <p class="no-internships">No internships found. Please try a different search.</p>
+            {% endif %}
+        </div>
+    </section>
+    <script>
+        // Ensure the original functionality of search and enroll remains unchanged
+        document.addEventListener('DOMContentLoaded', function () {
+            const fromHero = {{ from_hero|default(false)|tojson }};
+            if (fromHero) {
+                console.log("Search results from Hero.html displayed.");
+            }
+        });
+
+        function toggleFilters() {
+            var filtersDiv = document.getElementById("filters");
+            if (filtersDiv.style.display === "none" || filtersDiv.style.display === "") {
+                filtersDiv.style.display = "block"; // Show filters
+            } else {
+                filtersDiv.style.display = "none"; // Hide filters
+            }
+        }
+
+        async function storeQuery() {
+            const queryInput = document.querySelector('.search-input');
+            const query = queryInput.value.trim();
+            
+            if (!query) {
+                alert("Please enter a search query.");
+                return;
+            }
+
+            // Show loading overlay
+            document.getElementById('loadingOverlay').style.display = 'flex';
+
+            try {
+                const response = await fetch('/store_query', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ 
+                        query: query,
+                        location: document.querySelector('input[name="location"]').value,
+                        company: document.querySelector('input[name="company"]').value,
+                        job_title: document.querySelector('input[name="job_title"]').value
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('search-form').submit();
+                } else {
+                    document.getElementById('loadingOverlay').style.display = 'none';
+                    alert("Failed to store query.");
+                }
+            } catch (error) {
+                document.getElementById('loadingOverlay').style.display = 'none';
+                console.error("Error storing query:", error);
+            }
+        }
+
+        // Hide loading overlay when page loads (in case of back navigation)
+        window.onload = function() {
+            document.getElementById('loadingOverlay').style.display = 'none';
+        };
+
+        async function enroll() {
+            // Retrieve the query from the session (set during the search)
+            const query = {{ session.get('query')|tojson }};
+            if (!query) {
+                alert("No query found. Please search first.");
+                return;
+            }
+
+            // Show enroll loading overlay
+            document.getElementById('enrollLoadingOverlay').style.display = 'flex';
+
+            try {
+                const response = await fetch('/enroll', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ query })
+                });
+
+                const data = await response.json();
+                alert(data.message); // Show success or error message
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred while enrolling.');
+            } finally {
+                // Hide enroll loading overlay
+                document.getElementById('enrollLoadingOverlay').style.display = 'none';
+            }
+        }
+    </script>
+
+    <!-- Include Footer -->
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+</body>
+</html>

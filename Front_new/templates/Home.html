@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSync</title>
+
+    <!-- Link to CSS files -->
+    <link rel="stylesheet" href="{{ url_for('static', filename='header.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='hero.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='internship.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+</head>
+<body>
+
+    <!-- Include Header -->
+    {% include 'Header.html' %}
+
+    <!-- Include all sections -->
+    {% include 'Hero.html' %}
+    {% include 'Internship.html' %}
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+    
+
+</body>
+</html>

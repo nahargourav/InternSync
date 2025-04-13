@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSync | Project Suggestions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='projects.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+</head>
+<body>
+    <!-- Include Header -->
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            
+            <span stlye= "margin-left : 10px" class="username">{{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>    <div class="container">
+    <div class="container">
+        <h1 class="page-title">Project Ideas for <span id="courseName">Loading...</span></h1>
+        <div id="loading" class="loading-container">
+            <div class="loading-spinner"></div>
+            <p class="loading-text">Generating project suggestions...</p>
+        </div>
+        <div id="projects-container" style="display: none;">
+            <!-- Projects will be dynamically inserted here -->
+        </div>
+    </div>
+
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+
+    <script>
+        async function fetchProjects() {
+            // Show loading, hide projects container
+            document.getElementById('loading').style.display = 'flex';
+            document.getElementById('projects-container').style.display = 'none';
+            
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseName = urlParams.get('course_name');
+            
+            // Update the course name in the heading
+            document.getElementById('courseName').textContent = decodeURIComponent(courseName);
+            
+            try {
+                const response = await fetch(`/get_projects?course_name=${encodeURIComponent(courseName)}`);
+                const data = await response.json();
+                
+                if (data.error) {
+                    throw new Error(data.error);
+                }
+                
+                // Hide loading, show projects container
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('projects-container').style.display = 'block';
+                
+                displayProjects(data.projects);
+            } catch (error) {
+                console.error('Error:', error);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('projects-container').style.display = 'block';
+                document.getElementById('projects-container').innerHTML = 
+                    `<div class="project-card"><p style="color: red">Error: ${error.message || 'Failed to load projects'}</p></div>`;
+            }
+        }
+
+        function displayProjects(projectsText) {
+            const container = document.getElementById('projects-container');
+            console.log('Received project text:', projectsText);  // Debug log
+            const projects = parseProjectsText(projectsText);
+            console.log('Parsed projects:', projects);  // Debug log
+
+            if (projects.length === 0) {
+                container.innerHTML = '<div class="project-card"><p>No projects available.</p></div>';
+                return;
+            }
+
+            projects.forEach(project => {
+                const card = createProjectCard(project);
+                container.appendChild(card);
+            });
+        }
+
+        function parseProjectsText(text) {
+            console.log('Raw text:', text);  // Debug log
+            const projects = [];
+            const projectSections = text.split('---').filter(Boolean);
+            
+            projectSections.forEach(section => {
+                console.log('Processing section:', section);  // Debug log
+                const lines = section.split('\n').filter(Boolean);
+                const project = {
+                    name: '',
+                    problem: '',
+                    techStack: [],
+                    features: []
+                };
+
+                let currentSection = '';
+                
+                lines.forEach(line => {
+                    line = line.trim();
+                    
+                    if (line.startsWith('### Project')) {
+                        const nameMatch = line.match(/Project \d+: \*\*(.*?)\*\*/);
+                        if (nameMatch) {
+                            project.name = nameMatch[1];
+                        }
+                    }
+                    else if (line.startsWith('#### Problem Statement:')) {
+                        currentSection = 'problem';
+                    }
+                    else if (line.startsWith('#### Tech Stack:')) {
+                        currentSection = 'tech';
+                    }
+                    else if (line.startsWith('#### Unique Features:')) {
+                        currentSection = 'features';
+                    }
+                    else if (line.startsWith('-')) {
+                        const content = line.substring(1).trim();
+                        if (currentSection === 'tech') {
+                            project.techStack.push(content);
+                        }
+                        else if (currentSection === 'features') {
+                            project.features.push(content);
+                        }
+                    }
+                    else if (currentSection === 'problem' && !line.startsWith('####')) {
+                        project.problem += (project.problem ? ' ' : '') + line;
+                    }
+                });
+
+                if (project.name) {
+                    console.log('Parsed project:', project);  // Debug log
+                    projects.push(project);
+                }
+            });
+
+            return projects;
+        }
+
+        function createProjectCard(project) {
+            const card = document.createElement('div');
+            card.className = 'project-card';
+            
+            card.innerHTML = `
+                <h2 class="project-title">${project.name || 'Untitled Project'}</h2>
+                <div>
+                    <h3 class="section-title">Problem Statement</h3>
+                    <div class="problem-description">
+                        <p>${project.problem || 'No problem statement available.'}</p>
+                    </div>
+                </div>
+                <div>
+                    <h3 class="section-title">Tech Stack</h3>
+                    <div class="tech-stack">
+                        ${project.techStack.length > 0 
+                            ? project.techStack.map(tech => `
+                                <span class="tech-item">${tech}</span>
+                            `).join('')
+                            : '<span class="tech-item">No tech stack specified</span>'
+                        }
+                    </div>
+                </div>
+                <div>
+                    <h3 class="section-title">Unique Features</h3>
+                    <ul class="feature-list">
+                        ${project.features.length > 0
+                            ? project.features.map(feature => `
+                                <li>${feature}</li>
+                            `).join('')
+                            : '<li>No features specified</li>'
+                        }
+                    </ul>
+                </div>
+            `;
+            
+            return card;
+        }
+
+        // Load projects when the page loads
+        fetchProjects();
+    </script>
+</body>
+</html>

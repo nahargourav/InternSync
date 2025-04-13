@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Community Section</title>
+    <style>
+        body { font-family: Arial, sans-serif; }
+        .container { width: 80%; margin: auto; }
+        .post-form, .comment-form { margin-bottom: 20px; }
+        .post-card { border: 1px solid #ddd; padding: 10px; margin: 10px 0; }
+        .comments { margin-left: 20px; }
+        .button { background: #007bff; color: white; padding: 5px 10px; border: none; cursor: pointer; }
+    </style>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='community.css') }}">
+    <style>
+        .logout-button {
+            background: linear-gradient(135deg, #ff4b2b, #ff416c);
+            color: white;
+            margin-left: 15px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .logout-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-btn, .projects-btn, .community-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #840adb;
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .view-btn:hover, .projects-btn:hover, .community-btn:hover {
+            background-color: #0be61d;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .internship-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .title {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+    
+</head>
+<body>
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            
+            <span stlye= "margin-left : 10px" class="username">{{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>    
+    <div class="container">
+        <h2>Community Discussion for <span id="course-name"></span></h2>
+        
+        <div class="post-form">
+            <h3>Post Your Project/Idea</h3>
+            <input type="text" id="title" placeholder="Title" required><br>
+            <textarea id="description" placeholder="Describe your idea..." required></textarea><br>
+            <input type="text" id="link" placeholder="Project Link (optional)"><br>
+            <button class="button" onclick="addPost()">Post</button>
+        </div>
+        
+        <h3>All Posts</h3>
+        <div id="posts"></div>
+    </div>
+
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+    <script>
+        const courseName = new URLSearchParams(window.location.search).get('course_name');
+        document.getElementById("course-name").innerText = courseName;
+        
+        function fetchPosts() {
+            fetch(`/get_posts/${courseName}`)
+                .then(response => response.json())
+                .then(posts => {
+                    const postContainer = document.getElementById("posts");
+                    postContainer.innerHTML = "";
+                    posts.forEach(post => {
+                        let postElement = document.createElement("div");
+                        postElement.classList.add("post-card");
+                        postElement.innerHTML = `
+                            <h4>${post.title}</h4>
+                            <p>${post.description}</p>
+                            ${post.link ? `<a href="${post.link}" target="_blank">View Project</a>` : ""}
+                            <p><b>Posted by:</b> ${post.username}</p>
+                            <p><b>Comments:</b></p>
+                            <div class="comments" id="comments-${post.id}"></div>
+                            <input type="text" id="comment-${post.id}" placeholder="Write a comment...">
+                            <button class="button" onclick="addComment(${post.id})">Comment</button>
+                        `;
+                        postContainer.appendChild(postElement);
+                        fetchComments(post.id);
+                    });
+                });
+        }
+
+        function addPost() {
+            const title = document.getElementById("title").value;
+            const description = document.getElementById("description").value;
+            const link = document.getElementById("link").value;
+            
+            fetch("/add_post", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    user_id: 1,  // Replace with logged-in user ID
+                    course_name: courseName,
+                    title,
+                    description,
+                    link
+                })
+            }).then(() => {
+                fetchPosts();
+                document.getElementById("title").value = "";
+                document.getElementById("description").value = "";
+                document.getElementById("link").value = "";
+            });
+        }
+
+        function fetchComments(postId) {
+            fetch(`/get_comments/${postId}`)
+                .then(response => response.json())
+                .then(comments => {
+                    const commentContainer = document.getElementById(`comments-${postId}`);
+                    commentContainer.innerHTML = "";
+                    comments.forEach(comment => {
+                        let commentElement = document.createElement("p");
+                        commentElement.innerHTML = `<b>${comment.username}:</b> ${comment.comment}`;
+                        commentContainer.appendChild(commentElement);
+                    });
+                });
+        }
+
+        function addComment(postId) {
+            const commentText = document.getElementById(`comment-${postId}`).value;
+            
+            fetch("/add_comment", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({
+                    post_id: postId,
+                    user_id: 1,  // Replace with logged-in user ID
+                    comment: commentText
+                })
+            }).then(() => {
+                fetchComments(postId);
+                document.getElementById(`comment-${postId}`).value = "";
+            });
+        }
+
+        fetchPosts();
+    </script>
+</body>
+</html>

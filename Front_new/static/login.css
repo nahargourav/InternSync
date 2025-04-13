@@ -1,0 +1,70 @@
+/* Background: Subtle Purple-Orange Gradient */
+body {
+    background: linear-gradient(to right, #4e3a6d, #c27a56);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: 'Arial', sans-serif;
+}
+
+/* Card Styling */
+.card {
+    width: 100%;
+    max-width: 400px;
+    padding: 25px;
+    border-radius: 10px;
+    box-shadow: 0px 5px 15px rgba(0, 0, 0, 0.1);
+    background: #fff;
+    text-align: center;
+}
+
+/* InternSync Branding */
+.brand-title {
+    font-size: 26px;
+    font-weight: bold;
+}
+
+.brand-title .intern {
+    color: black;
+}
+
+.brand-title .sync {
+    color: #ff8c00;
+}
+
+/* Form Fields */
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ccc;
+    margin-bottom: 20px;
+}
+
+/* Button Styling */
+.btn-primary {
+    width: 100%;
+    border-radius: 8px;
+    background: linear-gradient(to right, #5a3f86, #d18c67);
+    border: none;
+    transition: 0.3s;
+    padding: 10px;
+    font-size: 16px;
+    color: white;
+    cursor: pointer;
+    margin-top: 10px;
+}
+
+.btn-primary:hover {
+    background: linear-gradient(to right, #4a2f70, #b67655);
+}
+
+/* Footer Link */
+.register-link {
+    font-size: 14px;
+    margin-top: 10px;
+}
+

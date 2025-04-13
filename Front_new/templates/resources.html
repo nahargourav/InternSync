@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSync | My Internships</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='resources.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        .logout-button {
+            background: linear-gradient(135deg, #ff4b2b, #ff416c);
+            color: white;
+            margin-left: 15px;
+            padding: 10px 20px;
+            border-radius: 8px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .logout-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .view-btn, .projects-btn, .community-btn {
+            padding: 8px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #840adb;
+            color: white;
+            text-decoration: none;
+            margin-right: 10px;
+            display: inline-block;
+            transition: background-color 0.3s;
+        }
+
+        .view-btn:hover, .projects-btn:hover, .community-btn:hover {
+            background-color: #0be61d;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .internship-card {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+
+        .title {
+            animation: fadeIn 0.8s ease-out forwards;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            
+            <span stlye= "margin-left : 10px" class="username">{{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>    
+    <div class="container">
+        <div style="padding-top: 100px;">
+            <h2 class="title">My Enrolled Internships</h2>
+            <div id="internship-container">
+                <!-- Internships will be dynamically inserted here -->
+            </div>
+        </div>
+    </div>
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+    <script>
+        async function fetchInternships() {
+            const response = await fetch("/get_enrolled_internships");
+            const internships = await response.json();
+            const container = document.getElementById("internship-container");
+
+            if (internships.length === 0) {
+                container.innerHTML = "<p class='no-internships'>No internships enrolled yet.</p>";
+                return;
+            }
+
+            internships.forEach((internship, index) => {
+                const totalVideos = internship.progress.total_videos;
+                const totalProjects = internship.progress.total_projects;
+                const completedVideos = internship.progress.videos;
+                const completedProjects = internship.progress.projects;
+
+                // Calculate percentages
+                const videoProgress = totalVideos > 0 ? (completedVideos / totalVideos) * 100 : 0;
+                const projectProgress = totalProjects > 0 ? (completedProjects / totalProjects) * 100 : 0;
+                const totalProgress = Math.round((videoProgress + projectProgress) / 2);
+
+                const card = document.createElement("div");
+                card.className = "internship-card";
+                card.style.animationDelay = `${index * 0.2}s`;
+                card.innerHTML = `
+                    <div class="internship-details">
+                        <h3>${internship.course_name}</h3>
+                        <p><i class="far fa-calendar-alt"></i> <strong>Started:</strong> ${internship.date_posted}</p>
+                        
+                        <div class="progress-section">
+                            <p><i class="fas fa-video"></i> Videos Progress (${completedVideos}/${totalVideos})</p>
+                            <div class="progress-indicator">
+                                <div class="progress-bar" style="width: ${videoProgress}%"></div>
+                            </div>
+                            <p class="progress-percentage">${Math.round(videoProgress)}%</p>
+                        </div>
+
+                        <div class="progress-section">
+                            <p><i class="fas fa-tasks"></i> Projects Progress (${completedProjects}/${totalProjects})</p>
+                            <div class="progress-indicator">
+                                <div class="progress-bar" style="width: ${projectProgress}%"></div>
+                            </div>
+                            <p class="progress-percentage">${Math.round(projectProgress)}%</p>
+                        </div>
+
+                        <p class="total-progress">
+                            <strong>Overall Progress:</strong> 
+                            <span class="progress-value">${totalProgress}%</span>
+                        </p>
+                        
+                        <div class="button-group">
+                            <a href="/videos?course_name=${encodeURIComponent(internship.course_name)}" class="view-btn">
+                                <i class="fas fa-play-circle"></i> Videos
+                            </a>
+                            <a href="/projects?course_name=${encodeURIComponent(internship.course_name)}" class="projects-btn">
+                                <i class="fas fa-project-diagram"></i> Projects
+                            </a>
+                            <a href="/community?course_name=${encodeURIComponent(internship.course_name)}" class="community-btn">
+                                <i class="fas fa-users"></i> Community
+                            </a>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        fetchInternships();
+    </script>
+</body>
+</html>

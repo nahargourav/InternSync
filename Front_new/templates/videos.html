@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>InternSync | My Internships</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='videos.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='header_logged.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='footer.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .video-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .complete-btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 8px 16px;
+            border-radius: 4px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+
+        .complete-btn.completed {
+            background: #888;
+            cursor: default;
+        }
+
+        .completion-status {
+            color: #4CAF50;
+            margin-left: 20px;
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo" style="text-align: left">Intern<span>Sync</span></div>
+        <nav class="main-nav">
+            <a href="{{ url_for('home_logged_in') }}">Home</a>
+            <a href="https://roadmap.sh/">RoadMap</a>
+            <a href="{{ url_for('list_intern') }}">Internships</a>
+            <a href="{{ url_for('resources') }}">Resources</a>
+        </nav>
+        <div class="user-info">
+            
+            <span stlye= "margin-left : 10px" class="username">{{ session['username'] }}</span>
+            <a href="{{ url_for('logout') }}" class="logout-button">Logout</a>
+        </div>
+    </header>    <div class="container">
+        <h2 style="font-size:50px; text-transform: uppercase;" class="title">
+            <span id="courseName"></span> Videos
+        </h2>
+        <div id="internship-container">
+            <!-- Internships will be dynamically inserted here -->
+        </div>
+    </div>
+    {% include 'Footer.html' %}
+    {% include 'Chat_front.html' %}
+    <script>
+        async function checkVideoCompletion(videoId, courseName) {
+            const response = await fetch(`/check_completion?type=video&item_id=${encodeURIComponent(videoId)}&course_name=${encodeURIComponent(courseName)}`);
+            const data = await response.json();
+            return data.completed;
+        }
+
+        async function fetchInternships() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const courseName = urlParams.get("course_name");
+
+            // Update the heading with course name
+            document.getElementById("courseName").textContent = courseName || '';
+
+            if (!courseName) {
+                document.getElementById("internship-container").innerHTML = "<p class='no-internships'>Course name is missing.</p>";
+                return;
+            }
+
+            // Fetch resources for the given course_name
+            const response = await fetch(`/get_enrolled_videos?course_name=${encodeURIComponent(courseName)}`);
+            const internships = await response.json();
+            const container = document.getElementById("internship-container");
+
+            if (internships.length === 0) {
+                container.innerHTML = "<p class='no-internships'>No Resources Found.</p>";
+                return;
+            }
+
+            internships.forEach(async (internship, index) => {
+                const videoId = internship.resource_url;
+                const isCompleted = await checkVideoCompletion(videoId, courseName);
+                
+                const card = document.createElement("div");
+                card.className = "internship-card";
+                card.innerHTML = `
+                    <div class="internship-details">
+                        <h3>${internship.resource_name}</h3>
+                        <a href="${internship.resource_url}" target="_blank" class="view-btn">
+                            <i class="fas fa-play-circle"></i> Watch Now
+                        </a>
+                        <div class="rating-container">
+                            <button class="thumb-btn thumb-up" onclick="rateVideo('${videoId}', 'like', ${index})">
+                                <i class="fas fa-thumbs-up"></i>
+                                <span id="likes-${index}">0</span>
+                            </button>
+                            <button class="thumb-btn thumb-down" onclick="rateVideo('${videoId}', 'dislike', ${index})">
+                                <i class="fas fa-thumbs-down"></i>
+                                <span id="dislikes-${index}">0</span>
+                            </button>
+                        </div>
+                        <button 
+                            class="complete-btn ${isCompleted ? 'completed' : ''}" 
+                            onclick="markAsCompleted('${videoId}', this)"
+                            ${isCompleted ? 'disabled' : ''}
+                        >
+                            ${isCompleted ? 'Completed' : 'Mark as Complete'}
+                        </button>
+                    </div>
+                `;
+                container.appendChild(card);
+
+                // Fetch initial ratings
+                fetchRatings(videoId, index);
+            });
+        }
+
+        async function rateVideo(videoId, action, index) {
+            const response = await fetch("/rate_video", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ video_id: videoId, rating_type: action }),
+            });
+
+            if (response.ok) {
+                fetchRatings(videoId, index); // Refresh the counts
+            } else {
+                alert("You can only rate once or an error occurred.");
+            }
+        }
+
+        async function fetchRatings(videoId, index) {
+            const response = await fetch(`/get_video_ratings?video_id=${encodeURIComponent(videoId)}`);
+            const data = await response.json();
+
+            document.getElementById(`likes-${index}`).textContent = data.likes || 0;
+            document.getElementById(`dislikes-${index}`).textContent = data.dislikes || 0;
+        }
+
+        async function markAsCompleted(videoId, button) {
+            const courseName = document.getElementById("courseName").textContent;
+            try {
+                const response = await fetch('/mark_completed', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        course_name: courseName,
+                        item_id: videoId,
+                        type: 'video'
+                    })
+                });
+
+                if (response.ok) {
+                    button.classList.add('completed');
+                    button.textContent = 'Completed';
+                    button.disabled = true;
+                    // Force refresh progress
+                    const event = new CustomEvent('videoCompleted', { detail: { courseId: courseName } });
+                    window.dispatchEvent(event);
+                }
+            } catch (error) {
+                console.error('Error marking video as completed:', error);
+            }
+        }
+
+        fetchInternships();
+    </script>
+</body>
+</html>

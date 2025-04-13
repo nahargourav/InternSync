@@ -1,0 +1,18 @@
+services:
+  - type: web
+    name: internsync-app
+    env: python
+    buildCommand: ""
+    startCommand: cd Front_new && gunicorn Main:app
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.10
+    build:
+      packages:
+        - chromium
+    runtimeEnv:
+      - key: CHROMIUM_PATH
+        value: "/usr/bin/chromium"
+
+    staticPublishPath: Front_new/static
+    autoDeploy: false
